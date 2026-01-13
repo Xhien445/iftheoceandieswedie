@@ -1,0 +1,477 @@
+/* --- CẤU HÌNH CƠ BẢN --- */
+:root {
+    --main-blue: #0033ff;
+    --blue: #0033ff;   /* Định nghĩa biến --blue trùng với main-blue */
+    --white: #ffffff;  /* Định nghĩa màu trắng */
+    --black: #000000;  /* Định nghĩa màu đen cho background overlay */
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    overflow: hidden;
+    
+    /* CẬP NHẬT: Cursor mặc định toàn trang */
+    /* Fallback là auto nếu không load được ảnh */
+    cursor: url('assets/cursor.svg'), auto; 
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* --- TYPOGRAPHY --- */
+.main-text {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    font-family: 'Notable', sans-serif;
+    font-size: 3.33vw;
+    line-height: 1.2;
+    text-transform: uppercase;
+    z-index: 20;
+
+    /* CẬP NHẬT: Tạo chiều sâu (Depth) */
+    /* Bóng đen đậm tỏa ra xung quanh chữ. 
+       Khi blob xanh bơi ra sau chữ, bóng này sẽ tách chữ ra khỏi nền xanh */
+    text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.9);
+}
+
+.text-white { color: #ffffff; display: block; }
+.text-blue { color: var(--main-blue); display: block; }
+
+/* --- BLOBS --- */
+.blob {
+    position: absolute;
+    background-color: var(--main-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; 
+    padding-right: 1.5vw;
+    
+    font-family: 'Atkinson Hyperlegible Mono', monospace;
+    font-size: 2.5vw; 
+    
+    top: 0; left: 0;
+    will-change: transform;
+
+    pointer-events: auto; 
+    
+    /* CẬP NHẬT: Cursor pointer khi hover vào blob */
+    cursor: url('assets/pointer.svg'), pointer;
+    
+    transition: background-color 0.3s ease; 
+    box-sizing: border-box; 
+}
+
+.blob-text {
+    display: block;
+    opacity: 1; 
+}
+
+/* Khi hover: Đổi sang căn giữa */
+.blob.is-hovered {
+    justify-content: center !important; 
+    padding-right: 0 !important;
+    z-index: 100;
+}
+
+
+/* Design cục 1 */
+.blob-1 {
+    width: 5vw;
+    height: 3vw;
+    border-radius: 50px;
+    font-size: 1vw;
+}
+
+/* Design cục 2 */
+.blob-2 {
+    width: 6vw;
+    height: 5.5vw;
+    border-radius: 3vw;
+    font-size: 1vw;
+}
+
+/* Design cục 3 */
+.blob-3 {
+    width: 10vw;
+    height: 4vw;
+    border-radius: 50px;
+    font-size: 1.5vw;
+}
+
+/* --- HIỆU ỨNG GỢN SÓNG --- */
+#ripple-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.ripple-cluster {
+    position: absolute;
+    pointer-events: none;
+}
+
+.ripple-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px solid var(--main-blue);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+@keyframes rippleEffect {
+    0% { width: 0px; height: 0px; opacity: 1; border-width: 3px; }
+    100% { width: 120vw; height: 120vw; opacity: 0; border-width: 1px; }
+}
+
+/* --- MỚI: CURSOR TRAIL (BONG BÓNG) --- */
+.cursor-bubble {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4); /* Màu trắng đục */
+    pointer-events: none; /* Để không chặn chuột click */
+    z-index: 9999; /* Luôn nổi lên trên cùng */
+    transform: translate(-50%, -50%); /* Căn giữa tâm chuột */
+}
+
+
+.overlay-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: var(--black);
+  z-index: 9999;
+  overflow-y: scroll; 
+  overflow-x: hidden;
+  scrollbar-width: none; 
+    opacity: 1;
+  visibility: visible;
+  transition:  opacity 0.5s ease-in-out, visibility 0.5s ease-in-out; 
+  
+}
+
+.overlay-container::-webkit-scrollbar { display: none; }
+
+.overlay-container.hidden {
+  opacity: 0;
+  visibility: hidden; 
+  pointer-events: none;
+}
+
+.poster {
+  width: 100%;
+  height: auto;  
+  min-height: 100vh; 
+  position: relative;
+  overflow: hidden;
+  
+  padding-bottom: 5vw; 
+}
+
+.blue { color: var(--blue); }
+.white { color: var(--white); }
+
+
+
+.back-btn {
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+  position: absolute;
+  top: 2.08vw;         
+  left: 6vw;
+  cursor: url('assets/pointer.svg'), pointer; 
+  padding: 0.4vw 1.25vw; 
+  border-radius: 50vw;
+  border: 2px solid var(--blue);   
+  background: transparent;         
+  color: var(--blue);              
+  font-size: 0.94vw;   
+  transition: all 0.2s ease; 
+  z-index: 500;
+}
+
+.more-btn {
+  position: fixed; 
+  top: 50%;
+  bottom: auto; 
+  right: 2.08vw;
+  transform: translateY(-50%);
+  padding: 0.4vw 1.25vw; 
+  border-radius: 50vw;
+  border: 2px solid var(--blue);   
+  background: transparent;         
+  color: var(--blue);              
+  font-size: 0.94vw;   
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+  cursor: url('assets/pointer.svg'), pointer; 
+  z-index: 500;
+  transition: all 0.2s ease ;
+}
+
+.back-btn:hover {
+  color: var(--white); 
+  border: 2px solid var(--white); 
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 34, 255, 0.3);
+}
+.more-btn:hover {
+  color: var(--white); 
+  border: 2px solid var(--white); 
+  transform: translateY(-50%) scale(1.05); 
+}
+
+.main-title {
+  position: absolute;
+  top: 10.4vw;         
+  left: 6.25vw;      
+  font-family: "Notable", system-ui;
+  font-size: 5vw;  
+  line-height: 1.1;    
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.title-line { display: block; white-space: nowrap; }
+
+.left-explainer {
+  position: absolute;
+  top: 23.4vw;         
+  left: 6.25vw;        
+  width: 37.5vw;      
+  font-size: 1.35vw;   
+  line-height: 1.35;
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+  color: #ffffff;
+}
+.left-explainer strong { font-weight: 700; }
+
+.middle-heading {
+  position: absolute;
+  top: 52vw;           
+  right: 6.25vw;      
+  width: auto;
+  font-family: "Notable", system-ui;
+  font-size: 5vw;     
+  line-height: 1.1;
+  text-align: right;  
+}
+.mh-line { margin-bottom: 1.6vw; }
+
+.middle-body {
+  position: absolute;
+  top: 75.5vw;       
+  right: 6.25vw;     
+  width: 36.45vw;    
+  font-size: 1.35vw;  
+  line-height: 1.35;
+  text-align: right;
+  color: #ffffff;
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+}
+
+.sdg-block {
+  position: absolute;
+  top: 104vw;          
+  left: 6.25vw;      
+}
+
+.sdg-title {
+  font-family: "Notable", system-ui;
+  font-size: 5vw;      
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2.08vw; 
+}
+
+.sdg-desc {
+  font-family: "Notable";
+  font-size: 2vw;   
+  line-height: 1.2;
+  text-transform: uppercase;
+  width: 58.3vw;  
+  color: #ffffff;    
+}
+.sdg-desc span { display: block; }
+
+.team-block {
+  position: absolute;
+  top: 145.8vw;      
+  right: 5.7vw;      
+  text-align: right;
+  font-size: 1.5vw;  
+  line-height: 1.4;
+  color: #ffffff;
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+}
+
+.team-title {
+  font-size: 2.34vw;  
+  margin-bottom: 0.83vw; 
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 0.4vw;
+  color: #ffffff;
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+}
+.team-list span { display: block; }
+
+
+.footer-line {
+  position: absolute;
+  left: 6.25vw;
+  right: 6.25vw;
+  top: 162vw;      
+  height: 1px;         
+  background: #ffffff;  
+  
+}
+
+.footer-left, .footer-right {
+  position: absolute;
+  font-size: 1vw;  
+  line-height: 1.4;
+    top: 164vw;     
+    color: #ffffff;
+  font-family: "Atkinson Hyperlegible Mono", monospace;   
+}
+
+.footer-left { left: 6.25vw; }
+.footer-right { right: 6.25vw; text-align: right; }
+.footer-left span, .footer-right span { display: block; }
+
+
+.poster {
+  height: 175vw; 
+}
+.img-wrapper {
+  position: absolute;
+  cursor: url('assets/pointer.svg'), pointer;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+/* --- VỊ TRÍ CÁC HÌNH --- */
+.img-top-right {
+  top: 23.4vw;
+  right: 6.25vw;
+  width: 42vw;
+}
+
+.img-middle-left {
+  top: 69vw;
+  left: 6.25vw;
+  width: 42vw;
+}
+
+.img-bottom-right {
+  top: 114vw;
+  right: 6.25vw;
+  width: 42vw;
+}
+
+/* --- LỚP PHỦ MÀU ĐEN (HOVER) --- */
+.hover-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Màu đen mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0; /* Mặc định ẩn */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Text tên thành viên */
+.hover-overlay span {
+  color: var(--white);
+  font-family: "Atkinson Hyperlegible Mono", monospace;
+  font-size: 1.5vw; 
+  text-align: center;
+  font-weight: bold;
+  padding: 1vw;
+  border: 1px solid var(--blue);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* --- HIỆU ỨNG KHI DI CHUỘT VÀO --- */
+.img-wrapper:hover .hover-overlay {
+  opacity: 1; /* Hiện lớp đen */
+}
+
+.img-wrapper:hover img {
+  transform: scale(1.05); /* Zoom nhẹ hình */
+}
+
+.force-pointer {
+  /* 16 16 là tọa độ tâm của ảnh 32x32, giúp click chính xác hơn */
+  cursor: url('assets/pointer.svg') 16 16, pointer !important; 
+}
+
+/* --- LOADING OVERLAY --- */
+#loading-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: #000000;
+    z-index: 10000;
+    
+    /* Căn giữa cụm loading-container vào giữa màn hình */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Không set width cứng, để nó tự co giãn theo nội dung */
+}
+
+.loading-logo {
+    width: 8vw; 
+    height: auto;
+    opacity: 0; /* Mặc định ẩn */
+    display: block;
+    /* Không dùng transform translate nữa vì Flexbox tự lo vị trí */
+}
+
+/* Wrapper bao quanh text, nhiệm vụ là giấu text đi lúc đầu */
+.loading-text-wrapper {
+    width: 0; /* Ban đầu chiều rộng bằng 0 -> Logo sẽ đứng 1 mình ở giữa */
+    overflow: hidden; /* Che phần text bị thừa ra */
+    opacity: 0;
+}
+
+.loading-text {
+    font-family: 'Notable', sans-serif;
+    font-size: 4vw;
+    text-transform: uppercase;
+    display: flex;
+    gap: 0.5vw;
+    white-space: nowrap;
+    
+    /* Padding trái để tạo khoảng cách với Logo khi mở ra */
+    padding-left: 1.5vw; 
+}
